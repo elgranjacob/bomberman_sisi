@@ -2,6 +2,7 @@ package juego;
 
 public class Jugador {
     private int x, y;
+    private boolean vivo = true;
 
     public Jugador(int x, int y) {
         this.x = x;
@@ -9,19 +10,19 @@ public class Jugador {
     }
 
     public void moverArriba() {
-        y--;
+        if (vivo)y--;
     }
 
     public void moverAbajo() {
-        y++;
+        if(vivo)y++;
     }
 
     public void moverDerecha() {
-        x++;
+        if (vivo)x++;
     }
 
     public void moverIzquierda() {
-        x--;
+        if (vivo)x--;
     }
 
     public int getX() {
@@ -30,5 +31,11 @@ public class Jugador {
 
     public int getY() {
         return y;
+    }
+    public boolean isVivo() {
+        return vivo;
+    }
+    public void setVivo(boolean vivo) {
+        this.vivo = vivo;
     }
 }

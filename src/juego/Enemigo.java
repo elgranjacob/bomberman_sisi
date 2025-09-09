@@ -11,20 +11,6 @@ public class Enemigo {
         this.y = y;
     }
 
-   /*  public void moverEnemigos(){
-        int max;
-        int movimientos = (int)(Math.random())*(max);
-
-        switch (movimientos) {
-            case 0:
-                
-                break;
-            case 1:
-                break;
-            case
-        }
-    } */
-
     public int getX() {
         return x;
     }

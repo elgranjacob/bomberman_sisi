@@ -10,7 +10,7 @@ public class Bomba {
         this.x = x;
         this.y = y;
         this.tiempoRestante = tiempoRestante;
-        
+
     }
 
     public void tiempoRestante() {
@@ -23,34 +23,68 @@ public class Bomba {
         return tiempoRestante == 0;
     }
 
-    public void explotar(Tablero tablero) {
+    public void explotar(Tablero tablero, Jugador jugador) {
         int radio = 2;
         tablero.setValor(y, x, Tablero.EXPLOSION); // centro
-
-        for (int i = 1; i <= radio; i++) {
-            if (y - i >= 0)
+        // un bucle por cada expansión porque usamos break, por lo tanto requiere uno
+        // para cada uno
+        for (int i = 1; i <= radio; i++) {// i = 1 por que 0 viene siendo el centro
+            if (y - i >= 0) {
+                int valor = tablero.getValor(y - i, x);
+                if (valor == Tablero.PARED)
+                    break;
+                if (colisionaCon(y - i, x)){
+                    jugador.setVivo(false);
+                }
                 tablero.setValor(y - i, x, Tablero.EXPLOSION);// expansion arriba
-            if (y + i < tablero.getFilas())
-                tablero.setValor(y + i, x, Tablero.EXPLOSION);// expansion abajo
-            if (x - i >= 0)
-                tablero.setValor(y, x - i, Tablero.EXPLOSION);//expansion izquierda
-            if (x + i < tablero.getColumnas())
-                tablero.setValor(y, x + i, Tablero.EXPLOSION);// 
-
+            }
         }
-         Timer t = new Timer(1000, e -> {
+        for (int i = 1; i <= radio; i++) {// i = 1 por que 0 viene siendo el centro
+            if (y + i < tablero.getFilas()) {
+                int valor = tablero.getValor(y + i, x);
+                if (valor == Tablero.PARED)
+                    break;
+                if (colisionaCon(y + i, x)){
+                    jugador.setVivo(false);
+                }
+                tablero.setValor(y + i, x, Tablero.EXPLOSION);// expansion abajo
+            }
+        }
+        for (int i = 1; i <= radio; i++) {// i = 1 por que 0 viene siendo el centro
+            if (x - i >= 0) {
+                int valor = tablero.getValor(y, x - i);
+                if (valor == Tablero.PARED)
+                    break;
+                if (colisionaCon(y, x - i)){
+                    jugador.setVivo(false);
+                }
+                tablero.setValor(y, x - i, Tablero.EXPLOSION);// expansion izquierda
+            }
+        }
+        for (int i = 1; i <= radio; i++) {// i = 1 por que 0 viene siendo el centro
+            if (x + i < tablero.getColumnas()) {
+                int valor = tablero.getValor(y, x + i);
+                if (valor == Tablero.PARED)
+                    break;
+                if (colisionaCon(y, x - i)){
+                    jugador.setVivo(false);
+                }
+                tablero.setValor(y, x + i, Tablero.EXPLOSION);// expansion derecha
+            }
+        }
+        Timer t = new Timer(300, e -> {
             tablero.setValor(y, x, Tablero.VACIO);
             for (int i = 1; i <= radio; i++) {
-            if (y - i >= 0)
-                tablero.setValor(y - i, x, Tablero.VACIO);
-            if (y + i < tablero.getFilas())
-                tablero.setValor(y + i, x, Tablero.VACIO);
-            if (x - i >= 0)
-                tablero.setValor(y, x - i, Tablero.VACIO);
-            if (x + i < tablero.getColumnas())
-                tablero.setValor(y, x + i, Tablero.VACIO);
-                
-        }
+                if (y - i >= 0 && tablero.getValor(y - i, x) == Tablero.EXPLOSION)
+                    tablero.setValor(y - i, x, Tablero.VACIO);
+                if (y + i < tablero.getFilas() && tablero.getValor(y + i, x) == Tablero.EXPLOSION)
+                    tablero.setValor(y + i, x, Tablero.VACIO);
+                if (x - i >= 0 && tablero.getValor(y, x - i) == Tablero.EXPLOSION)
+                    tablero.setValor(y, x - i, Tablero.VACIO);
+                if (x + i < tablero.getColumnas() && tablero.getValor(y, x + i) == Tablero.EXPLOSION)
+                    tablero.setValor(y, x + i, Tablero.VACIO);
+
+            }
         });
         t.setRepeats(false);
         t.start();
@@ -67,4 +101,9 @@ public class Bomba {
     public int getTiempoRestante() {
         return tiempoRestante;
     }
+
+    public boolean colisionaCon(int fila, int columna) {
+        return this.x == columna && this.y == fila;
+    }
+
 }

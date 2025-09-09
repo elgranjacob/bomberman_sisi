@@ -2,8 +2,6 @@ package juego;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -45,22 +43,24 @@ public class Jugar extends JPanel {
     }
 
     private void colocarBomba() {
-        bombas.add(new Bomba(jugador.getX(), jugador.getY(), 4));// agragamos bombas a la lista de
+        bombas.add(new Bomba(jugador.getX(), jugador.getY(), 3));// agragamos bombas a la lista de
     }
 
-    Timer timer = new Timer(1000, e -> {
-        ArrayList<Bomba> bombasAEliminar = new ArrayList<>();
+    // explosion de las bombas
+    Timer timer = new Timer(500, e -> {
+        ArrayList<Bomba> bombasAEliminar = new ArrayList<>();// bombas eliminadas
         for (Bomba bomba : bombas) {
-            bomba.tiempoRestante();
-            if (bomba.explosion()) {
-                bomba.explotar(tablero);
-                bombasAEliminar.add(bomba);
+            bomba.tiempoRestante();// activamos las bombas
+            if (bomba.explosion()) {// marca true cuando ya no haya tiempo
+                bomba.explotar(tablero, jugador);// explosion dentro del tablero
+                bombasAEliminar.add(bomba);// lo agregamos al listado de bombas eliminadas
             }
         }
-        bombas.removeAll(bombasAEliminar);
+        bombas.removeAll(bombasAEliminar);// limpiamos lista
         repaint();
     });
 
+    // pintamaos componentes
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -98,10 +98,13 @@ public class Jugar extends JPanel {
     private void dibujarJugador(Graphics g) {
         int anchoCelda = getWidth() / tablero.getColumnas();
         int altoCelda = getHeight() / tablero.getFilas();
-        g.setColor(Color.BLUE);
-        g.fillOval(jugador.getX() * anchoCelda, jugador.getY() * altoCelda, anchoCelda, altoCelda);// dibujamos el
-                                                                                                   // jugador como un
-                                                                                                   // ovalo
+        if (jugador.isVivo()) {
+            g.setColor(Color.BLUE);
+            g.fillOval(jugador.getX() * anchoCelda, jugador.getY() * altoCelda, anchoCelda, altoCelda);// dibujamos el
+                                                                                                       // jugador como
+                                                                                                       // un
+                                                                                                       // ovalo
+        }
     }
 
     private void dibujarEnemigos(Graphics g) {

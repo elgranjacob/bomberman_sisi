@@ -36,6 +36,7 @@ public class Tablero {
         }
     }
 
+
     public int getValor(int fila, int columna) {
         return mapa[fila][columna];
     }

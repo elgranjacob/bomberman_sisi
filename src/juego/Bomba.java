@@ -33,7 +33,7 @@ public class Bomba {
                 int valor = tablero.getValor(y - i, x);
                 if (valor == Tablero.PARED)
                     break;
-                if (colisionaCon(y - i, x)){
+                if (jugador.colisionaCon(y - i, x)){
                     jugador.setVivo(false);
                 }
                 tablero.setValor(y - i, x, Tablero.EXPLOSION);// expansion arriba
@@ -44,7 +44,7 @@ public class Bomba {
                 int valor = tablero.getValor(y + i, x);
                 if (valor == Tablero.PARED)
                     break;
-                if (colisionaCon(y + i, x)){
+                if (jugador.colisionaCon(y + i, x)){
                     jugador.setVivo(false);
                 }
                 tablero.setValor(y + i, x, Tablero.EXPLOSION);// expansion abajo
@@ -55,7 +55,7 @@ public class Bomba {
                 int valor = tablero.getValor(y, x - i);
                 if (valor == Tablero.PARED)
                     break;
-                if (colisionaCon(y, x - i)){
+                if (jugador.colisionaCon(y, x - i)){
                     jugador.setVivo(false);
                 }
                 tablero.setValor(y, x - i, Tablero.EXPLOSION);// expansion izquierda
@@ -66,7 +66,7 @@ public class Bomba {
                 int valor = tablero.getValor(y, x + i);
                 if (valor == Tablero.PARED)
                     break;
-                if (colisionaCon(y, x - i)){
+                if (jugador.colisionaCon(y, x - i)){
                     jugador.setVivo(false);
                 }
                 tablero.setValor(y, x + i, Tablero.EXPLOSION);// expansion derecha
@@ -100,10 +100,6 @@ public class Bomba {
 
     public int getTiempoRestante() {
         return tiempoRestante;
-    }
-
-    public boolean colisionaCon(int fila, int columna) {
-        return this.x == columna && this.y == fila;
     }
 
 }

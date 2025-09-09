@@ -38,4 +38,8 @@ public class Jugador {
     public void setVivo(boolean vivo) {
         this.vivo = vivo;
     }
+
+    public boolean colisionaCon(int fila, int columna) {
+        return this.x == columna && this.y == fila;
+    }
 }

@@ -1,7 +1,5 @@
 package juego;
 
-// import java.util.Random;
-
 public class Enemigo {
 
     private int x, y, vida;

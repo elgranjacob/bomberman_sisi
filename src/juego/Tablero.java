@@ -1,6 +1,5 @@
 package juego;
-
-//import java.util.ArrayList;
+ 
 
 public class Tablero {
     public static final int PARED = 1;
@@ -16,25 +15,29 @@ public class Tablero {
     }
 
     private void inicializarMapa() {
-        for (int i = 0; i < mapa.length; i++) {
-            for (int j = 0; j < mapa[i].length; j++) {
-                if (i == 0 || j == 0 || i == mapa.length - 1 || j == mapa[i].length - 1) {
-                    mapa[i][j] = PARED;
-                } else if (i >= 1 || j >= 1 || i < mapa.length - 1 || j < mapa[i].length - 1) {
-                    if (i % 2 == 0 && j % 2 == 0) {
-                        mapa[i][j] = PARED;
-                    } else {
-                        double probabilidadMuro = 0.2;
-                        if (Math.random() < probabilidadMuro) {
-                            mapa[i][j] = MURO;
-                        }
-                    }
-                } else {
-                    mapa[i][j] = VACIO;
-                }
+    for (int i = 0; i < mapa.length; i++) {
+        for (int j = 0; j < mapa[i].length; j++) {
+
+            //Bordes
+            if (i == 0 || j == 0 || i == mapa.length - 1 || j == mapa[i].length - 1) {
+                mapa[i][j] = PARED;
+
+            //Muros interiores "fijos" (patrón ajedrezado)
+            } else if (i % 2 == 0 && j % 2 == 0) {
+                mapa[i][j] = PARED;
+
+            //Posible muro aleatorio
+            } else if (Math.random() < 0.2) {
+                mapa[i][j] = MURO;
+
+            //Espacio vacío
+            } else {
+                mapa[i][j] = VACIO;
             }
         }
     }
+}
+
 
 
     public int getValor(int fila, int columna) {

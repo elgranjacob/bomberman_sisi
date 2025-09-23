@@ -13,36 +13,48 @@ public class Jugar extends JPanel {
     private ArrayList<Bomba> bombas;
 
     public Jugar() {
-        tablero = new Tablero(15, 20);
+        tablero = new Tablero(13, 15);
         jugador = new Jugador(7, 7);
         enemigo = new Enemigo(10, 9);
         bombas = new ArrayList<>();
 
-        setPreferredSize(new Dimension(600, 800));
+        setPreferredSize(new Dimension(416, 480));
         setFocusable(true);
         addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {// invoca un keyevent cada que se presiona la llave
+            public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
-                if (key == KeyEvent.VK_UP) {// usamos las llavaes de cada campo para que suceda el evento
-                    jugador.moverArriba();
-                } else if (key == KeyEvent.VK_DOWN) {
-                    jugador.moverAbajo();
-                } else if (key == KeyEvent.VK_LEFT) {
-                    jugador.moverIzquierda();
-                } else if (key == KeyEvent.VK_RIGHT) {
-                    jugador.moverDerecha();
-                } else if (key == KeyEvent.VK_SPACE) {
-                    colocarBomba();
+                switch (key) {
+                    case KeyEvent.VK_W:
+                        jugador.moverArriba(tablero);
+                        break;
+                    case KeyEvent.VK_S:
+                        jugador.moverAbajo(tablero);
+                        break;
+                    case KeyEvent.VK_A:
+                        jugador.moverIzquierda(tablero);
+                        break;
+                    case KeyEvent.VK_D:
+                        jugador.moverDerecha(tablero);
+                        break;
+                    case KeyEvent.VK_SPACE:
+                        colocarBomba();
+                        break;
+                    default:
+                        // ignorar otras teclas
+                        return;
                 }
-                repaint();// repinta el panel cada que se presiona una tecla
+
+                repaint();
             }
+
         });
         timer.start();
 
     }
 
     private void colocarBomba() {
+        if (jugador.isVivo())
         bombas.add(new Bomba(jugador.getX(), jugador.getY(), 3));// agragamos bombas a la lista de
     }
 
@@ -60,7 +72,7 @@ public class Jugar extends JPanel {
         repaint();
     });
 
-    // pintamaos componentes
+    // pintamos componentes
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

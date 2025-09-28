@@ -12,8 +12,8 @@ public class Jugador {
     public void moverArriba(Tablero tablero) {
         int nuevaY = y - 1;
         if (isVivo() && nuevaY >= 0) {
-            int celda = tablero.getValor(x, nuevaY);
-            if (celda != Tablero.PARED) {// se revisa si hay colision con los muros
+            int celda = tablero.getValor(nuevaY, x);
+            if (celda != Tablero.PARED && celda != Tablero.MURO) {// se revisa si hay colision con los muros
                 setY(nuevaY);
             }
         }
@@ -22,8 +22,8 @@ public class Jugador {
     public void moverAbajo(Tablero tablero) {
         int nuevaY = y + 1;
         if (isVivo() && nuevaY < tablero.getFilas()) {//validamos si es posible el movimiento y el estado del sprite
-            int celda = tablero.getValor(x, nuevaY);
-            if (celda != Tablero.PARED) {// se revisa si hay colision con los muros
+            int celda = tablero.getValor(nuevaY, x);
+            if (celda != Tablero.PARED && celda != Tablero.MURO) {// se revisa si hay colision con los muros
                 setY(nuevaY);
             }
         }
@@ -32,8 +32,8 @@ public class Jugador {
     public void moverDerecha(Tablero tablero) {
         int nuevaX = x + 1;
         if (isVivo() && nuevaX < tablero.getColumnas() ) {
-            int celda = tablero.getValor(nuevaX, y);
-            if (celda != Tablero.PARED) {// se revisa si hay colision con los muros
+            int celda = tablero.getValor(y, nuevaX);
+            if (celda != Tablero.PARED && celda != Tablero.MURO) {// se revisa si hay colision con los muros
                 setX(nuevaX);
             }
         }
@@ -42,8 +42,8 @@ public class Jugador {
     public void moverIzquierda(Tablero tablero) {
         int nuevaX = x - 1;
         if (isVivo() && nuevaX >= 0) {
-            int celda = tablero.getValor(nuevaX, y);
-            if (celda != Tablero.PARED) {// se revisa si hay colision con los muros
+            int celda = tablero.getValor(y, nuevaX);
+            if (celda != Tablero.PARED && celda != Tablero.MURO) {// se revisa si hay colision con los muros
                 setX(nuevaX);
             }
         }

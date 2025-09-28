@@ -14,7 +14,7 @@ public class Jugar extends JPanel {
 
     public Jugar() {
         tablero = new Tablero(13, 15);
-        jugador = new Jugador(7, 7);
+        jugador = new Jugador(1, 7);
         enemigo = new Enemigo(10, 9);
         bombas = new ArrayList<>();
 

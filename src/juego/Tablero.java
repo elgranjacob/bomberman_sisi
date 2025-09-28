@@ -17,7 +17,7 @@ public class Tablero {
     private void inicializarMapa() {
     for (int i = 0; i < mapa.length; i++) {
         for (int j = 0; j < mapa[i].length; j++) {
-
+ 
             //Bordes
             if (i == 0 || j == 0 || i == mapa.length - 1 || j == mapa[i].length - 1) {
                 mapa[i][j] = PARED;

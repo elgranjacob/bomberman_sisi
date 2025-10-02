@@ -15,7 +15,7 @@ public class Jugar extends JPanel {
     public Jugar() {
         tablero = new Tablero(13, 15);
         jugador = new Jugador(1, 7);
-        enemigo = new Enemigo(10, 9);
+        enemigo = new Enemigo(10, 9); 
         bombas = new ArrayList<>();
 
         setPreferredSize(new Dimension(416, 480));
@@ -55,7 +55,7 @@ public class Jugar extends JPanel {
 
     private void colocarBomba() {
         if (jugador.isVivo())
-        bombas.add(new Bomba(jugador.getX(), jugador.getY(), 3));// agragamos bombas a la lista de
+            bombas.add(new Bomba(jugador.getX(), jugador.getY(), 3));// agragamos bombas a la lista de
     }
 
     // explosion de las bombas
@@ -64,7 +64,7 @@ public class Jugar extends JPanel {
         for (Bomba bomba : bombas) {
             bomba.tiempoRestante();// activamos las bombas
             if (bomba.explosion()) {// marca true cuando ya no haya tiempo
-                bomba.explotar(tablero, jugador);// explosion dentro del tablero
+                bomba.explotar(tablero, jugador, enemigo);// explosion dentro del tablero
                 bombasAEliminar.add(bomba);// lo agregamos al listado de bombas eliminadas
             }
         }
@@ -122,11 +122,13 @@ public class Jugar extends JPanel {
     private void dibujarEnemigos(Graphics g) {
         int anchoCelda = getWidth() / tablero.getColumnas();
         int altoCelda = getHeight() / tablero.getFilas();
-        g.setColor(Color.GREEN);
-        g.fillOval(enemigo.getX() * anchoCelda, enemigo.getY() * altoCelda, anchoCelda, altoCelda);// dibujamos el
-                                                                                                   // jugador como un
-                                                                                                   // ovalo
-
+        if (enemigo.isVivo()) {
+            g.setColor(Color.GREEN);
+            g.fillOval(enemigo.getX() * anchoCelda, enemigo.getY() * altoCelda, anchoCelda, altoCelda);// dibujamos el
+                                                                                                        // jugador como un
+                                                                                                        // ovalo
+        }
+        enemigo.moverEnemigos(tablero);
     }
 
     private void dibujarBombas(Graphics g) {

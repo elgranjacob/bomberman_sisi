@@ -9,13 +9,13 @@ import java.util.ArrayList;
 public class Jugar extends JPanel {
     private Tablero tablero;
     private Jugador jugador;
-    private Enemigo enemigo;
+    private ArrayList<Enemigo> enemigo;
     private ArrayList<Bomba> bombas;
 
     public Jugar() {
         tablero = new Tablero(13, 15);
         jugador = new Jugador(1, 7);
-        enemigo = new Enemigo(10, 9); 
+        enemigo = new ArrayList<>();
         bombas = new ArrayList<>();
 
         setPreferredSize(new Dimension(416, 480));
@@ -44,13 +44,30 @@ public class Jugar extends JPanel {
                         // ignorar otras teclas
                         return;
                 }
+                for(Enemigo enemies : enemigo){
+                    if (jugador.colisiona(enemies)) 
+                        jugador.setVivo(false);
+                }
 
                 repaint();
             }
 
         });
+        generarEnemigos(5);
         timer.start();
 
+    }
+
+    private void generarEnemigos(int cantidad) {
+        for (int i = 0; i < cantidad; i++) {
+            int x, y;
+            do {
+                x = (int) (Math.random() * tablero.getColumnas());
+                y = (int) (Math.random() * tablero.getFilas());
+            } while (tablero.getValor(y, x) != Tablero.VACIO); // evita muros y paredes
+
+            enemigo.add(new Enemigo(x, y)); // 1 = vida inicial
+        }
     }
 
     private void colocarBomba() {
@@ -122,13 +139,14 @@ public class Jugar extends JPanel {
     private void dibujarEnemigos(Graphics g) {
         int anchoCelda = getWidth() / tablero.getColumnas();
         int altoCelda = getHeight() / tablero.getFilas();
-        if (enemigo.isVivo()) {
-            g.setColor(Color.GREEN);
-            g.fillOval(enemigo.getX() * anchoCelda, enemigo.getY() * altoCelda, anchoCelda, altoCelda);// dibujamos el
-                                                                                                        // jugador como un
-                                                                                                        // ovalo
+
+        for (Enemigo e : enemigo) { 
+            if (e.isVivo()) {
+                g.setColor(Color.GREEN);
+                g.fillOval(e.getX() * anchoCelda, e.getY() * altoCelda, anchoCelda, altoCelda);
+            }
+            e.moverEnemigos(tablero);
         }
-        enemigo.moverEnemigos(tablero);
     }
 
     private void dibujarBombas(Graphics g) {

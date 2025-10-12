@@ -19,10 +19,11 @@ public class Enemigo extends Personaje {
                  moverAbajo(tablero);
                 break;
             case 3:
-            //derecha
+                //derecha
                  moverDerecha(tablero);
                 break;
             case 4:
+                //izquierda
                 moverIzquierda(tablero);
                 break;
         }

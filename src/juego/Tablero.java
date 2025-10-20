@@ -1,5 +1,4 @@
 package juego;
- 
 
 public class Tablero {
     public static final int PARED = 1;
@@ -15,30 +14,34 @@ public class Tablero {
     }
 
     private void inicializarMapa() {
-    for (int i = 0; i < mapa.length; i++) {
-        for (int j = 0; j < mapa[i].length; j++) {
- 
-            //Bordes
-            if (i == 0 || j == 0 || i == mapa.length - 1 || j == mapa[i].length - 1) {
-                mapa[i][j] = PARED;
+        for (int i = 0; i < mapa.length; i++) {
+            for (int j = 0; j < mapa[i].length; j++) {
 
-            //Muros interiores "fijos" (patrón ajedrezado)
-            } else if (i % 2 == 0 && j % 2 == 0) {
-                mapa[i][j] = PARED;
+                // Bordes
+                if (i == 0 || j == 0 || i == mapa.length - 1 || j == mapa[i].length - 1) {
+                    mapa[i][j] = PARED;
 
-            //Posible muro aleatorio
-            } else if (Math.random() < 0.2) {
-                mapa[i][j] = MURO;
+                    // Muros interiores "fijos" (patrón ajedrezado)
+                } else if (i % 2 == 0 && j % 2 == 0) {
+                    mapa[i][j] = PARED;
 
-            //Espacio vacío
-            } else {
-                mapa[i][j] = VACIO;
+                    // Posible muro aleatorio
+                } else if (Math.random() < 0.2) {
+                    mapa[i][j] = MURO;
+
+                    // Espacio vacío
+                } else {
+                    mapa[i][j] = VACIO;
+                }
             }
         }
+        // Limpiamos la zona inicial del jugador
+        mapa[7][1] = VACIO;
+        mapa[6][1] = VACIO;
+        mapa[8][1] = VACIO;
+        mapa[7][2] = VACIO;
+
     }
-}
-
-
 
     public int getValor(int fila, int columna) {
         return mapa[fila][columna];

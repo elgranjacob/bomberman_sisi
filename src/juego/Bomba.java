@@ -2,7 +2,6 @@ package juego;
 
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
-
 import javax.swing.Timer;
 
 public class Bomba {
@@ -17,7 +16,7 @@ public class Bomba {
     }
 
     public void tiempoRestante() {
-        if (tiempoRestante > 0) {
+        if (tiempoRestante > 0) { 
             tiempoRestante--;
         }
     }
@@ -40,6 +39,7 @@ public class Bomba {
         //se define la acción del metodo abstracto de la interfaz
         if (jugador.colisionaConBomba(posY, posX)) {
             jugador.setVivo(false);
+            
         }
         //Enemigos
         for (Enemigo ene : enemigos) {

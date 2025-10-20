@@ -5,12 +5,19 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Jugar extends JPanel {
+    private boolean gameOver = false;
     private Tablero tablero;
     private Jugador jugador;
     private ArrayList<Enemigo> enemigo;
     private ArrayList<Bomba> bombas;
+    // creamos un conjunto para almacenar las teclas presionadas (no almacena datos
+    // duplicados)
+    private final Set<Integer> teclasPresionadas = new HashSet<>();// implentamos HashSet para un manejo más rápido en
+                                                                   // conjuntos
 
     public Jugar() {
         tablero = new Tablero(13, 15);
@@ -20,40 +27,55 @@ public class Jugar extends JPanel {
 
         setPreferredSize(new Dimension(416, 480));
         setFocusable(true);
+
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
-                switch (key) {
-                    case KeyEvent.VK_W:
-                        jugador.moverArriba(tablero);
-                        break;
-                    case KeyEvent.VK_S:
-                        jugador.moverAbajo(tablero);
-                        break;
-                    case KeyEvent.VK_A:
-                        jugador.moverIzquierda(tablero);
-                        break;
-                    case KeyEvent.VK_D:
-                        jugador.moverDerecha(tablero);
-                        break;
-                    case KeyEvent.VK_SPACE:
-                        colocarBomba();
-                        break;
-                    default:
-                        // ignorar otras teclas
-                        return;
-                }
-                for(Enemigo enemies : enemigo){
-                    if (jugador.colisiona(enemies)) 
-                        jugador.setVivo(false);
+                if (!teclasPresionadas.contains(key)) { // si no estaba presionada antes
+                    teclasPresionadas.add(key);
+
+                    switch (key) {
+                        case KeyEvent.VK_W:
+                            jugador.moverArriba(tablero);
+                            break;
+                        case KeyEvent.VK_S:
+                            jugador.moverAbajo(tablero);
+                            break;
+                        case KeyEvent.VK_A:
+                            jugador.moverIzquierda(tablero);
+                            break;
+                        case KeyEvent.VK_D:
+                            jugador.moverDerecha(tablero);
+                            break;
+                        case KeyEvent.VK_SPACE:
+                            colocarBomba();
+                            break;
+                        case KeyEvent.VK_R:
+                            if (gameOver) {
+                                reiniciarJuego();
+                            }
+                            break;
+
+                    }
+                    for (Enemigo enemies : enemigo) {
+                        if (jugador.isVivo() && enemies.isVivo() && jugador.colisiona(enemies)) {
+                            jugador.setVivo(false);
+                            gameOver = true;
+                        }
+                    }
+
+                    repaint();
                 }
 
-                repaint();
             }
 
+            @Override
+            public void keyReleased(KeyEvent e) {
+                teclasPresionadas.remove(e.getKeyCode()); // liberamos la tecla
+            }
         });
-        generarEnemigos(5);
+        generarEnemigos(3);
         timer.start();
 
     }
@@ -82,12 +104,40 @@ public class Jugar extends JPanel {
             bomba.tiempoRestante();// activamos las bombas
             if (bomba.explosion()) {// marca true cuando ya no haya tiempo
                 bomba.explotar(tablero, jugador, enemigo);// explosion dentro del tablero
+                if (!jugador.isVivo())
+                    gameOver = true;
                 bombasAEliminar.add(bomba);// lo agregamos al listado de bombas eliminadas
             }
         }
         bombas.removeAll(bombasAEliminar);// limpiamos lista
         repaint();
     });
+
+    private void gameOverFunction(Graphics g) {
+        if (gameOver) {
+            g.setColor(new Color(0, 0, 0, 150)); // Fondo semitransparente
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.drawString("GAME OVER", getWidth() / 2 - 120, getHeight() / 2);
+
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.setColor(Color.WHITE);
+            g.drawString("Presiona R para reiniciar", getWidth() / 2 - 120, getHeight() / 2 + 40);
+        }
+
+    }
+
+    private void reiniciarJuego() {
+        tablero = new Tablero(13, 15);
+        jugador = new Jugador(1, 7);
+        enemigo.clear();
+        generarEnemigos(3);
+        bombas.clear();
+        gameOver = false;
+        repaint();
+    }
 
     // pintamos componentes
     @Override
@@ -97,6 +147,7 @@ public class Jugar extends JPanel {
         dibujarJugador(g);
         dibujarEnemigos(g);
         dibujarBombas(g);
+        gameOverFunction(g);
     }
 
     private void dibujarTablero(Graphics g) {
@@ -140,7 +191,7 @@ public class Jugar extends JPanel {
         int anchoCelda = getWidth() / tablero.getColumnas();
         int altoCelda = getHeight() / tablero.getFilas();
 
-        for (Enemigo e : enemigo) { 
+        for (Enemigo e : enemigo) {
             if (e.isVivo()) {
                 g.setColor(Color.GREEN);
                 g.fillOval(e.getX() * anchoCelda, e.getY() * altoCelda, anchoCelda, altoCelda);

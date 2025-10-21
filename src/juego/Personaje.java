@@ -3,81 +3,73 @@ package juego;
 public class Personaje {
     protected int x, y;
     protected boolean vivo = true;
-
-    // Campos para animación
-    protected int direccion = 0; // 0: abajo, 1: izquierda, 2: derecha, 3: arriba
+    protected int direccion = 0; 
     protected int frameAnimacion = 0;
     protected boolean isMoving = false;
 
     public Personaje(int x, int y) {
         this.x = x;
         this.y = y;
-        this.direccion = 0; // Inicia mirando al frente (abajo)
     }
     
-    // --- MÉTODOS DE MOVIMIENTO (MODIFICADOS) ---
-
-    // Método privado para actualizar la dirección
     private void setDireccion(int nuevaDireccion) {
         if (this.direccion != nuevaDireccion) {
             this.direccion = nuevaDireccion;
-            this.frameAnimacion = 0; // Reiniciar animación al cambiar dirección
+            this.frameAnimacion = 0; 
         }
     }
 
+    // --- REEMPLAZA TU MÉTODO ANTIGUO POR ESTE ---
     public void moverArriba(Tablero tablero) {
         int nuevaY = y - 1;
-        // CORRECCIÓN: Usamos los métodos 'isVivo()' y 'setY()'
-        if (this.isVivo() && nuevaY >= 0) { 
+        if (isVivo() && nuevaY >= 0) {
             int celda = tablero.getValor(nuevaY, x);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                this.setY(nuevaY); // <--- Método que faltaba
-                setDireccion(3); // 3: arriba
-                this.isMoving = true; 
+                setY(nuevaY);
+                setDireccion(3);
+                this.isMoving = true; // <-- ESTA ES LA LÍNEA CLAVE
             }
         }
     }
 
+    // --- ASEGÚRATE DE QUE LOS OTROS MÉTODOS TENGAN 'isMoving = true' ---
     public void moverAbajo(Tablero tablero) {
         int nuevaY = y + 1;
-        // CORRECCIÓN: Usamos 'isVivo()' y 'setY()'
-        if (this.isVivo() && nuevaY < tablero.getFilas()) {
+        if (isVivo() && nuevaY < tablero.getFilas()) {
             int celda = tablero.getValor(nuevaY, x);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                this.setY(nuevaY); // <--- Método que faltaba
-                setDireccion(0); // 0: abajo
-                this.isMoving = true; 
+                setY(nuevaY);
+                setDireccion(0);
+                this.isMoving = true; // <-- AQUÍ TAMBIÉN
             }
         }
     }
 
     public void moverDerecha(Tablero tablero) {
         int nuevaX = x + 1;
-        // CORRECCIÓN: Usamos 'isVivo()' y 'setX()'
-        if (this.isVivo() && nuevaX < tablero.getColumnas() ) {
+        if (isVivo() && nuevaX < tablero.getColumnas() ) {
             int celda = tablero.getValor(y, nuevaX);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                this.setX(nuevaX); // <--- Método que faltaba
-                setDireccion(2); // 2: derecha
-                this.isMoving = true; 
+                setX(nuevaX);
+                setDireccion(2);
+                this.isMoving = true; // <-- AQUÍ TAMBIÉN
             }
         }
     }
     
     public void moverIzquierda(Tablero tablero) {
         int nuevaX = x - 1;
-        // CORRECCIÓN: Usamos 'isVivo()' y 'setX()'
-        if (this.isVivo() && nuevaX >= 0) {
+        if (isVivo() && nuevaX >= 0) {
             int celda = tablero.getValor(y, nuevaX);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                this.setX(nuevaX); // <--- Método que faltaba
-                setDireccion(1); // 1: izquierda
-                this.isMoving = true; 
+                setX(nuevaX);
+                setDireccion(1);
+                this.isMoving = true; // <-- AQUÍ TAMBIÉN
             }
         }
     }
 
-    // --- GETTERS Y SETTERS (LOS QUE FALTABAN) ---
+    // ... (El resto de tus métodos: getX, getY, setX, setY, setIdle, etc.) ...
 
     public int getX() {
         return x;
@@ -102,7 +94,7 @@ public class Personaje {
     public void setVivo(boolean vivo) {
         this.vivo = vivo;
         if (!vivo) {
-             this.frameAnimacion = 0; // Reiniciar animación (para muerte)
+             this.frameAnimacion = 0; 
         }
     }
 
@@ -110,8 +102,6 @@ public class Personaje {
         return this.x == columna && this.y == fila;
     }
     
-    // --- NUEVOS MÉTODOS DE ANIMACIÓN ---
-
     public int getDireccion() {
         return direccion;
     }
@@ -126,11 +116,10 @@ public class Personaje {
 
     public void setIdle() {
         this.isMoving = false;
-        this.frameAnimacion = 0; // Reinicia al primer frame de "idle"
+        this.frameAnimacion = 0; 
     }
 
     public void siguienteFrame() {
-        // Asumiendo 4 frames por animación
         frameAnimacion = (frameAnimacion + 1) % 4; 
     }
 }

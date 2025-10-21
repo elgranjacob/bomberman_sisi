@@ -1,10 +1,10 @@
 package juego;
 
-// NUEVO: Imports de Swing (ventanas, panel)
+// Imports de Swing (ventanas, panel)
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-// NUEVO: Imports de AWT (gráficos, eventos, utilidades)
+// Imports de AWT (gráficos, eventos, utilidades)
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,12 +13,12 @@ import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-// NUEVO: Imports de Util (listas, conjuntos)
+// Imports de Util (listas, conjuntos)
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-// NUEVO: Imports de ImageIO (imágenes)
+// Imports de ImageIO (imágenes)
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException; // Necesario para ImageIO
@@ -30,6 +30,8 @@ public class Jugar extends JPanel {
     private ArrayList<Enemigo> enemigo;
     private ArrayList<Bomba> bombas;
     private final Set<Integer> teclasPresionadas = new HashSet<>();
+
+    
 
     private static final int TAMANO_CELDA = 32; 
 
@@ -49,6 +51,7 @@ public class Jugar extends JPanel {
     // Arrays de sprites para el ENEMIGO
     private BufferedImage[][] framesEnemigo_Fly = new BufferedImage[4][4];
 
+    // --- CONSTRUCTOR ---
     public Jugar() {
         tablero = new Tablero(13, 15);
         jugador = new Jugador(1, 7);
@@ -61,6 +64,7 @@ public class Jugar extends JPanel {
 
         setFocusable(true);
         
+        // --- KEY LISTENER (MODIFICADO) ---
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -68,20 +72,9 @@ public class Jugar extends JPanel {
                 if (!teclasPresionadas.contains(key)) { 
                     teclasPresionadas.add(key);
 
+                    // MODIFICADO: Solo reaccionamos a SPACE y R
                     if (!gameOver && jugador.isVivo()) { 
                         switch (key) {
-                            case KeyEvent.VK_W:
-                                jugador.moverArriba(tablero);
-                                break;
-                            case KeyEvent.VK_S:
-                                jugador.moverAbajo(tablero);
-                                break;
-                            case KeyEvent.VK_A:
-                                jugador.moverIzquierda(tablero);
-                                break;
-                            case KeyEvent.VK_D:
-                                jugador.moverDerecha(tablero);
-                                break;
                             case KeyEvent.VK_SPACE:
                                 colocarBomba();
                                 break;
@@ -89,7 +82,7 @@ public class Jugar extends JPanel {
                     }
 
                     if (key == KeyEvent.VK_R && gameOver) {
-                         reiniciarJuego();
+                        reiniciarJuego();
                     }
                 }
             }
@@ -116,15 +109,14 @@ public class Jugar extends JPanel {
         timer.start();
     }
     
+    // --- MÉTODOS DE UTILIDAD ---
+
     private void cortarFrames(BufferedImage[] arrayDestino, String path) throws IOException {
         BufferedImage hoja = ImageIO.read(getClass().getResource(path));
-        // MODIFICADO: Manejar hojas de sprites con menos de 4 frames (ej. win-front)
         for (int i = 0; i < arrayDestino.length; i++) {
-            // Comprobamos si el frame existe en la hoja
             if (i * TAMANO_CELDA < hoja.getWidth()) {
                 arrayDestino[i] = hoja.getSubimage(i * TAMANO_CELDA, 0, TAMANO_CELDA, TAMANO_CELDA);
             } else {
-                // Si no existe (ej. frame 3 y 4 de 'win'), repetimos el último frame
                 arrayDestino[i] = arrayDestino[i - 1]; 
             }
         }
@@ -132,7 +124,6 @@ public class Jugar extends JPanel {
 
    private void cargarSprites() {
         try {
-            
             spriteVacio = ImageIO.read(getClass().getResource("/juego/Sprites/terrain/grass.png"));
             spritePared = ImageIO.read(getClass().getResource("/juego/Sprites/terrain/rock.png"));
             spriteMuro = ImageIO.read(getClass().getResource("/juego/Sprites/terrain/wall.png"));
@@ -144,7 +135,6 @@ public class Jugar extends JPanel {
             cortarFrames(framesJugador_Idle[2], "/juego/Sprites/character/idle-right.png"); // 2: derecha
             cortarFrames(framesJugador_Idle[3], "/juego/Sprites/character/idle-back.png");  // 3: arriba
 
-            // Cargar Sprites del JUGADOR (Walk)
             cortarFrames(framesJugador_Walk[0], "/juego/Sprites/character/walk-front.png"); // 0: abajo
             cortarFrames(framesJugador_Walk[1], "/juego/Sprites/character/walk-left.png");  // 1: izquierda
             cortarFrames(framesJugador_Walk[2], "/juego/Sprites/character/walk-right.png"); // 2: derecha
@@ -166,6 +156,8 @@ public class Jugar extends JPanel {
         }
     }
 
+    // --- MÉTODOS DE LÓGICA DEL JUEGO ---
+
     private void generarEnemigos(int cantidad) {
         for (int i = 0; i < cantidad; i++) {
             int x, y;
@@ -182,25 +174,42 @@ public class Jugar extends JPanel {
             bombas.add(new Bomba(jugador.getX(), jugador.getY(), 3));
     }
 
-    Timer timer = new Timer(150, e -> { 
+    // --- GAME LOOP (TIMER) ---
+    Timer timer = new Timer(250, e -> { 
         
         if (gameOver) {
+            // --- LÓGICA DE GAME OVER ---
             if (!jugador.isVivo()) {
                 jugador.siguienteFrame(); // Animar muerte
             } else if (todosEnemigosMuertos()) {
                 jugador.siguienteFrame(); // Animar victoria
             }
+        
         } else {
+            // --- LÓGICA DEL JUEGO ACTIVO ---
+
+            // 1. Revisa el input del jugador (movimiento continuo con velocidad controlada)
+          if (teclasPresionadas.contains(KeyEvent.VK_W)) {
+  jugador.moverArriba(tablero);
+ } else if (teclasPresionadas.contains(KeyEvent.VK_S)) {
+   jugador.moverAbajo(tablero);
+   } else if (teclasPresionadas.contains(KeyEvent.VK_A)) {
+    jugador.moverIzquierda(tablero);
+    } else if (teclasPresionadas.contains(KeyEvent.VK_D)) {
+   jugador.moverDerecha(tablero);
+  }
+
+            // 2. Actualiza la animación del jugador (si se está moviendo)
             if (jugador.isMoving()) {
                 jugador.siguienteFrame();
             }
             
-            // Lógica de Bombas
+            // 3. Lógica de Bombas
             ArrayList<Bomba> bombasAEliminar = new ArrayList<>();
             for (Bomba bomba : bombas) {
                 bomba.tiempoRestante();
                 if (bomba.explosion()) {
-                    bomba.explotar(tablero, jugador, enemigo);
+                    bomba.explotar(tablero, jugador, enemigo); 
                     if (!jugador.isVivo())
                         gameOver = true;
                     bombasAEliminar.add(bomba);
@@ -208,7 +217,7 @@ public class Jugar extends JPanel {
             }
             bombas.removeAll(bombasAEliminar);
 
-            // Lógica de Enemigos
+            // 4. Lógica de Enemigos
             for (Enemigo en : enemigo) {
                 if (en.isVivo()) {
                     en.moverEnemigos(tablero); 
@@ -219,13 +228,16 @@ public class Jugar extends JPanel {
                 }
             }
             
-            // Lógica de Victoria
+            // 5. Lógica de Victoria
             if (todosEnemigosMuertos() && jugador.isVivo()) {
                 gameOver = true;
             }
-        }
-        repaint(); 
-    });
+        
+        } // <-- Cierre del 'else'
+        
+        repaint(); // Llama a repaint al final de cada tick
+    
+    }); // <-- Cierre del 'Timer'
     
     private boolean todosEnemigosMuertos() {
         for (Enemigo en : enemigo) {
@@ -235,6 +247,8 @@ public class Jugar extends JPanel {
         }
         return true;
     }
+
+    // --- MÉTODOS DE PANTALLA Y REINICIO ---
 
     private void gameOverFunction(Graphics g) {
         if (gameOver) {
@@ -275,6 +289,8 @@ public class Jugar extends JPanel {
         jugador.setVivo(true);
         repaint();
     }
+
+    // --- MÉTODOS DE DIBUJADO ---
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -361,4 +377,5 @@ public class Jugar extends JPanel {
             g.drawImage(spriteBomba, x, y, null);
         }
     }
-}
+    
+} // <-- LLAVE FINAL DE LA CLASE JUGAR

@@ -4,7 +4,6 @@ public class Enemigo extends Personaje {
 
     public Enemigo(int x, int y) {
         super(x, y);
-        this.isMoving = true; // El enemigo siempre está "volando" (moviéndose)
     }
 
     public void moverEnemigos(Tablero tablero) {
@@ -12,20 +11,24 @@ public class Enemigo extends Personaje {
     
         switch (movimiento) {
             case 1:
+                // arriba
                 moverArriba(tablero);
                 break;
             case 2:
+                // abajo
                 moverAbajo(tablero);
                 break;
             case 3:
+                //derecha
                 moverDerecha(tablero);
                 break;
             case 4:
+                //izquierda
                 moverIzquierda(tablero);
                 break;
         }
-
-        // Ya que isMoving es true, avanzamos el frame
+        
+        // El enemigo siempre se está moviendo, así que animamos en cada tick
         siguienteFrame();
     }
 }

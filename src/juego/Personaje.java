@@ -3,44 +3,47 @@ package juego;
 public class Personaje {
     protected int x, y;
     protected boolean vivo = true;
-    protected int direccion = 0; 
+
+    // Campos para animación
+    protected int direccion = 0; // 0: abajo, 1: izquierda, 2: derecha, 3: arriba
     protected int frameAnimacion = 0;
     protected boolean isMoving = false;
 
     public Personaje(int x, int y) {
         this.x = x;
         this.y = y;
+        this.direccion = 0; // Inicia mirando al frente (abajo)
     }
     
+    // --- MÉTODOS DE MOVIMIENTO (CON 'isMoving = true') ---
+
     private void setDireccion(int nuevaDireccion) {
         if (this.direccion != nuevaDireccion) {
             this.direccion = nuevaDireccion;
-            this.frameAnimacion = 0; 
+            this.frameAnimacion = 0; // Reiniciar animación al cambiar dirección
         }
     }
 
-    // --- REEMPLAZA TU MÉTODO ANTIGUO POR ESTE ---
     public void moverArriba(Tablero tablero) {
         int nuevaY = y - 1;
-        if (isVivo() && nuevaY >= 0) {
+        if (isVivo() && nuevaY >= 0) { 
             int celda = tablero.getValor(nuevaY, x);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                setY(nuevaY);
-                setDireccion(3);
-                this.isMoving = true; // <-- ESTA ES LA LÍNEA CLAVE
+                this.setY(nuevaY);
+                setDireccion(3); // 3: arriba
+                this.isMoving = true; 
             }
         }
     }
 
-    // --- ASEGÚRATE DE QUE LOS OTROS MÉTODOS TENGAN 'isMoving = true' ---
     public void moverAbajo(Tablero tablero) {
         int nuevaY = y + 1;
         if (isVivo() && nuevaY < tablero.getFilas()) {
             int celda = tablero.getValor(nuevaY, x);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                setY(nuevaY);
-                setDireccion(0);
-                this.isMoving = true; // <-- AQUÍ TAMBIÉN
+                this.setY(nuevaY);
+                setDireccion(0); // 0: abajo
+                this.isMoving = true; 
             }
         }
     }
@@ -50,9 +53,9 @@ public class Personaje {
         if (isVivo() && nuevaX < tablero.getColumnas() ) {
             int celda = tablero.getValor(y, nuevaX);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                setX(nuevaX);
-                setDireccion(2);
-                this.isMoving = true; // <-- AQUÍ TAMBIÉN
+                this.setX(nuevaX);
+                setDireccion(2); // 2: derecha
+                this.isMoving = true; 
             }
         }
     }
@@ -62,14 +65,14 @@ public class Personaje {
         if (isVivo() && nuevaX >= 0) {
             int celda = tablero.getValor(y, nuevaX);
             if (celda != Tablero.PARED && celda != Tablero.MURO) {
-                setX(nuevaX);
-                setDireccion(1);
-                this.isMoving = true; // <-- AQUÍ TAMBIÉN
+                this.setX(nuevaX);
+                setDireccion(1); // 1: izquierda
+                this.isMoving = true; 
             }
         }
     }
 
-    // ... (El resto de tus métodos: getX, getY, setX, setY, setIdle, etc.) ...
+    // --- GETTERS Y SETTERS ---
 
     public int getX() {
         return x;
@@ -94,7 +97,7 @@ public class Personaje {
     public void setVivo(boolean vivo) {
         this.vivo = vivo;
         if (!vivo) {
-             this.frameAnimacion = 0; 
+             this.frameAnimacion = 0; // Reiniciar animación (para muerte)
         }
     }
 
@@ -102,6 +105,8 @@ public class Personaje {
         return this.x == columna && this.y == fila;
     }
     
+    // --- MÉTODOS DE ANIMACIÓN ---
+
     public int getDireccion() {
         return direccion;
     }
@@ -116,10 +121,11 @@ public class Personaje {
 
     public void setIdle() {
         this.isMoving = false;
-        this.frameAnimacion = 0; 
+        this.frameAnimacion = 0; // Reinicia al primer frame de "idle"
     }
 
     public void siguienteFrame() {
+        // Asumiendo 4 frames por animación
         frameAnimacion = (frameAnimacion + 1) % 4; 
     }
 }

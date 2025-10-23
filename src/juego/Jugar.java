@@ -26,10 +26,10 @@ import java.io.IOException; // Necesario para ImageIO
 public class Jugar extends JPanel {
     private boolean gameOver = false;
     private Tablero tablero;
-    
+
     // --- LÓGICA DE JUGADORES (MODIFICADO A PLURAL) ---
     private ArrayList<Jugador> jugadores;
-    
+
     private ArrayList<Enemigo> enemigo;
     private ArrayList<Bomba> bombas;
     private final Set<Integer> teclasPresionadas = new HashSet<>();
@@ -37,9 +37,9 @@ public class Jugar extends JPanel {
     // --- VARIABLES DE VELOCIDAD DE MOVIMIENTO ---
     private int contadorMovimientoJugador = 0;
     // (Puedes cambiar el 2 por 3 si quieres que sea más lento)
-    private static final int TICKS_PARA_MOVER = 2; 
+    private static final int TICKS_PARA_MOVER = 2;
 
-    private static final int TAMANO_CELDA = 32; 
+    private static final int TAMANO_CELDA = 32;
 
     // --- Sprites del Tablero ---
     private BufferedImage spriteVacio;
@@ -53,7 +53,7 @@ public class Jugar extends JPanel {
     private BufferedImage[][] framesJugador_Walk = new BufferedImage[4][4];
     private BufferedImage[] framesJugador_Death = new BufferedImage[4];
     private BufferedImage[] framesJugador_Win = new BufferedImage[4];
-    
+
     // --- Arrays de sprites para el ENEMIGO ---
     private BufferedImage[][] framesEnemigo_Fly = new BufferedImage[4][4];
 
@@ -72,13 +72,13 @@ public class Jugar extends JPanel {
         setPreferredSize(new Dimension(anchoPanel, altoPanel));
 
         setFocusable(true);
-        
+
         // --- KEY LISTENER (PARA MULTIJUGADOR) ---
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
-                if (!teclasPresionadas.contains(key)) { 
+                if (!teclasPresionadas.contains(key)) {
                     teclasPresionadas.add(key);
                 }
 
@@ -88,7 +88,7 @@ public class Jugar extends JPanel {
                     if (key == KeyEvent.VK_SPACE && jugadores.get(0).isVivo()) {
                         colocarBomba(jugadores.get(0));
                     }
-                    
+
                     // Jugador 2 pone bomba con ENTER (si existe)
                     if (key == KeyEvent.VK_ENTER && jugadores.size() > 1 && jugadores.get(1).isVivo()) {
                         colocarBomba(jugadores.get(1));
@@ -108,39 +108,40 @@ public class Jugar extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 teclasPresionadas.remove(e.getKeyCode());
-                
+
                 // Revisar IDLE para Jugador 1 (WASD)
                 if (!teclasPresionadas.contains(KeyEvent.VK_W) &&
-                    !teclasPresionadas.contains(KeyEvent.VK_S) &&
-                    !teclasPresionadas.contains(KeyEvent.VK_A) &&
-                    !teclasPresionadas.contains(KeyEvent.VK_D)) {
-                    
+                        !teclasPresionadas.contains(KeyEvent.VK_S) &&
+                        !teclasPresionadas.contains(KeyEvent.VK_A) &&
+                        !teclasPresionadas.contains(KeyEvent.VK_D)) {
+
                     if (jugadores.get(0).isVivo()) {
-                        jugadores.get(0).setIdle(); 
+                        jugadores.get(0).setIdle();
                     }
                 }
 
                 // Revisar IDLE para Jugador 2 (Flechas) (si existe)
                 if (jugadores.size() > 1) {
                     if (!teclasPresionadas.contains(KeyEvent.VK_UP) &&
-                        !teclasPresionadas.contains(KeyEvent.VK_DOWN) &&
-                        !teclasPresionadas.contains(KeyEvent.VK_LEFT) &&
-                        !teclasPresionadas.contains(KeyEvent.VK_RIGHT)) {
-                        
+                            !teclasPresionadas.contains(KeyEvent.VK_DOWN) &&
+                            !teclasPresionadas.contains(KeyEvent.VK_LEFT) &&
+                            !teclasPresionadas.contains(KeyEvent.VK_RIGHT)) {
+
                         if (jugadores.get(1).isVivo()) {
-                            jugadores.get(1).setIdle(); 
+                            jugadores.get(1).setIdle();
                         }
                     }
                 }
             }
         });
 
-        cargarSprites(); 
+        cargarSprites();
         generarEnemigos(3);
-        timer.setDelay(150); // Velocidad general del juego (puedes subirla a 200 o 250)
+        timer.setDelay(250); // Velocidad general del juego (puedes subirla a 200 o 250)
         timer.start();
+        t.start();
     }
-    
+
     // --- MÉTODOS DE UTILIDAD (Sprites) ---
 
     private void cortarFrames(BufferedImage[] arrayDestino, String path) throws IOException {
@@ -149,36 +150,36 @@ public class Jugar extends JPanel {
             if (i * TAMANO_CELDA < hoja.getWidth()) {
                 arrayDestino[i] = hoja.getSubimage(i * TAMANO_CELDA, 0, TAMANO_CELDA, TAMANO_CELDA);
             } else {
-                arrayDestino[i] = arrayDestino[i - 1]; 
+                arrayDestino[i] = arrayDestino[i - 1];
             }
         }
     }
 
-   private void cargarSprites() {
+    private void cargarSprites() {
         try {
             spriteVacio = ImageIO.read(getClass().getResource("/juego/Sprites/terrain/grass.png"));
             spritePared = ImageIO.read(getClass().getResource("/juego/Sprites/terrain/rock.png"));
             spriteMuro = ImageIO.read(getClass().getResource("/juego/Sprites/terrain/wall.png"));
             spriteBomba = ImageIO.read(getClass().getResource("/juego/Sprites/items/dynamite.png"));
             spriteExplosion = ImageIO.read(getClass().getResource("/juego/Sprites/fxs/explosion.png"));
-            
+
             cortarFrames(framesJugador_Idle[0], "/juego/Sprites/character/idle-front.png"); // 0: abajo
-            cortarFrames(framesJugador_Idle[1], "/juego/Sprites/character/idle-left.png");  // 1: izquierda
+            cortarFrames(framesJugador_Idle[1], "/juego/Sprites/character/idle-left.png"); // 1: izquierda
             cortarFrames(framesJugador_Idle[2], "/juego/Sprites/character/idle-right.png"); // 2: derecha
-            cortarFrames(framesJugador_Idle[3], "/juego/Sprites/character/idle-back.png");  // 3: arriba
+            cortarFrames(framesJugador_Idle[3], "/juego/Sprites/character/idle-back.png"); // 3: arriba
 
             cortarFrames(framesJugador_Walk[0], "/juego/Sprites/character/walk-front.png"); // 0: abajo
-            cortarFrames(framesJugador_Walk[1], "/juego/Sprites/character/walk-left.png");  // 1: izquierda
+            cortarFrames(framesJugador_Walk[1], "/juego/Sprites/character/walk-left.png"); // 1: izquierda
             cortarFrames(framesJugador_Walk[2], "/juego/Sprites/character/walk-right.png"); // 2: derecha
-            cortarFrames(framesJugador_Walk[3], "/juego/Sprites/character/walk-back.png");  // 3: arriba
-           
-            cortarFrames(framesJugador_Death, "/juego/Sprites/character/death-front.png"); 
+            cortarFrames(framesJugador_Walk[3], "/juego/Sprites/character/walk-back.png"); // 3: arriba
+
+            cortarFrames(framesJugador_Death, "/juego/Sprites/character/death-front.png");
             cortarFrames(framesJugador_Win, "/juego/Sprites/character/win-front.png");
 
             cortarFrames(framesEnemigo_Fly[0], "/juego/Sprites/bat/fly-front.png"); // 0: abajo
-            cortarFrames(framesEnemigo_Fly[1], "/juego/Sprites/bat/fly-left.png");  // 1: izquierda
+            cortarFrames(framesEnemigo_Fly[1], "/juego/Sprites/bat/fly-left.png"); // 1: izquierda
             cortarFrames(framesEnemigo_Fly[2], "/juego/Sprites/bat/fly-right.png"); // 2: derecha
-            cortarFrames(framesEnemigo_Fly[3], "/juego/Sprites/bat/fly-back.png");  // 3: arriba
+            cortarFrames(framesEnemigo_Fly[3], "/juego/Sprites/bat/fly-back.png"); // 3: arriba
 
         } catch (Exception e) {
             System.err.println("Error fatal al cargar los sprites: " + e.getMessage());
@@ -197,7 +198,7 @@ public class Jugar extends JPanel {
                 x = (int) (Math.random() * tablero.getColumnas());
                 y = (int) (Math.random() * tablero.getFilas());
             } while (tablero.getValor(y, x) != Tablero.VACIO || (x == 1 && y == 7)); // Evitar spawn en jugador
-            enemigo.add(new Enemigo(x, y)); 
+            enemigo.add(new Enemigo(x, y));
         }
     }
 
@@ -220,21 +221,21 @@ public class Jugar extends JPanel {
     }
 
     // --- GAME LOOP (TIMER) ---
-    Timer timer = new Timer(150, e -> { 
-        
+    Timer timer = new Timer(250, e -> {
+
         if (gameOver) {
             // --- LÓGICA DE GAME OVER ---
             for (Jugador j : jugadores) {
-                 if (!j.isVivo() || todosEnemigosMuertos()) {
+                if (!j.isVivo() || todosEnemigosMuertos()) {
                     j.siguienteFrame();
-                 }
+                }
             }
-        
+
         } else {
             // --- LÓGICA DEL JUEGO ACTIVO ---
 
             // 1. Revisa el input del jugador (con velocidad controlada)
-            contadorMovimientoJugador++; 
+            contadorMovimientoJugador++;
 
             if (contadorMovimientoJugador >= TICKS_PARA_MOVER) {
                 // Movimiento Jugador 1 (WASD)
@@ -259,7 +260,7 @@ public class Jugar extends JPanel {
                 if (jugadores.size() > 1) {
                     Jugador j2 = jugadores.get(1);
                     if (j2.isVivo()) {
-                         if (teclasPresionadas.contains(KeyEvent.VK_UP)) {
+                        if (teclasPresionadas.contains(KeyEvent.VK_UP)) {
                             j2.moverArriba(tablero);
                             contadorMovimientoJugador = 0;
                         } else if (teclasPresionadas.contains(KeyEvent.VK_DOWN)) {
@@ -282,22 +283,11 @@ public class Jugar extends JPanel {
                     j.siguienteFrame();
                 }
             }
-            
-            // 3. Lógica de Bombas (pasa la LISTA de jugadores)
-            ArrayList<Bomba> bombasAEliminar = new ArrayList<>();
-            for (Bomba bomba : bombas) {
-                bomba.tiempoRestante();
-                if (bomba.explosion()) {
-                    bomba.explotar(tablero, jugadores, enemigo); // <- MODIFICADO
-                    bombasAEliminar.add(bomba);
-                }
-            }
-            bombas.removeAll(bombasAEliminar);
 
             // 4. Lógica de Enemigos (revisa colisión con TODOS)
             for (Enemigo en : enemigo) {
                 if (en.isVivo()) {
-                    en.moverEnemigos(tablero); 
+                    en.moverEnemigos(tablero);
                     for (Jugador j : jugadores) {
                         if (j.isVivo() && j.colisiona(en)) {
                             j.setVivo(false);
@@ -305,11 +295,11 @@ public class Jugar extends JPanel {
                     }
                 }
             }
-            
+
             // 5. Lógica de Victoria / Game Over
             int jugadoresVivos = 0;
-            for(Jugador j : jugadores) {
-                if(j.isVivo()) {
+            for (Jugador j : jugadores) {
+                if (j.isVivo()) {
                     jugadoresVivos++;
                 }
             }
@@ -319,13 +309,28 @@ public class Jugar extends JPanel {
             } else if (todosEnemigosMuertos() && jugadoresVivos > 0) {
                 gameOver = true;
             }
-        
+
         } // <-- Cierre del 'else'
-        
+
         repaint(); // Llama a repaint al final de cada tick
-    
+
     }); // <-- Cierre del 'Timer'
-    
+
+    // 3. Lógica de Bombas (pasa la LISTA de jugadores)
+    Timer t = new Timer(500, event -> {
+        ArrayList<Bomba> bombasAEliminar = new ArrayList<>(); // Lista temporal de bombas que van a desaparecer
+
+        for (Bomba bomba : bombas) {
+            bomba.tiempoRestante();
+            if (bomba.explosion()) {
+                bomba.explotar(tablero, jugadores, enemigo); // <- MODIFICADO
+                bombasAEliminar.add(bomba);
+            }
+        }
+        bombas.removeAll(bombasAEliminar);
+    });
+
+
     private boolean todosEnemigosMuertos() {
         for (Enemigo en : enemigo) {
             if (en.isVivo()) {
@@ -339,12 +344,12 @@ public class Jugar extends JPanel {
 
     private void gameOverFunction(Graphics g) {
         if (gameOver) {
-            g.setColor(new Color(0, 0, 0, 150)); 
+            g.setColor(new Color(0, 0, 0, 150));
             g.fillRect(0, 0, getWidth(), getHeight());
-            
+
             int jugadoresVivos = 0;
-            for(Jugador j : jugadores) {
-                if(j.isVivo()) {
+            for (Jugador j : jugadores) {
+                if (j.isVivo()) {
                     jugadoresVivos++;
                 }
             }
@@ -375,11 +380,11 @@ public class Jugar extends JPanel {
 
     private void reiniciarJuego() {
         tablero = new Tablero(13, 15);
-        
+
         // Vuelve a empezar solo con el Jugador 1
         jugadores.clear();
         jugadores.add(new Jugador(1, 7));
-        
+
         enemigo.clear();
         generarEnemigos(3);
         bombas.clear();
@@ -392,8 +397,8 @@ public class Jugar extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        dibujarTablero(g); 
-        dibujarBombas(g);  
+        dibujarTablero(g);
+        dibujarBombas(g);
         dibujarJugadores(g); // <-- PLURAL
         dibujarEnemigos(g);
         gameOverFunction(g);
@@ -407,7 +412,7 @@ public class Jugar extends JPanel {
                 int valor = tablero.getValor(i, j);
 
                 g.drawImage(spriteVacio, x, y, null);
-                
+
                 switch (valor) {
                     case Tablero.PARED:
                         g.drawImage(spritePared, x, y, null);
@@ -431,7 +436,7 @@ public class Jugar extends JPanel {
             int y = j.getY() * TAMANO_CELDA;
             int dir = j.getDireccion();
             int frame = j.getFrameAnimacion();
-            
+
             BufferedImage spriteADibujar = null;
 
             if (!j.isVivo()) {
@@ -462,7 +467,7 @@ public class Jugar extends JPanel {
                 int frame = e.getFrameAnimacion();
 
                 BufferedImage spriteADibujar = framesEnemigo_Fly[dir][frame];
-                
+
                 if (spriteADibujar != null) {
                     g.drawImage(spriteADibujar, x, y, null);
                 }
@@ -478,5 +483,5 @@ public class Jugar extends JPanel {
             g.drawImage(spriteBomba, x, y, null);
         }
     }
-    
+
 } // <-- LLAVE FINAL DE LA CLASE JUGAR

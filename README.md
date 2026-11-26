@@ -1,18 +1,29 @@
-## Getting Started
+# Bomberman en Java
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Juego estilo *Bomberman* para 1 o 2 jugadores, hecho en **Java** con **Swing**, sprites animados y programación orientada a objetos.
 
-## Folder Structure
+## Cómo se juega
+| Acción | Jugador 1 | Jugador 2 |
+|---|---|---|
+| Moverse | `W` `A` `S` `D` | Flechas |
+| Poner bomba | `Espacio` | `Enter` |
+| Unirse a la partida | — | `B` |
 
-The workspace contains two folders by default, where:
+- `R` reinicia la partida cuando termina el juego.
+- Destruye muros con las bombas y evita a los enemigos.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Estructura (`src/juego/`)
+- `Main` — punto de entrada.
+- `Jugar` — ciclo del juego, dibujo, animaciones y teclado.
+- `Tablero` — mapa de paredes, muros destructibles y celdas vacías.
+- `Personaje` — clase base; de ella heredan `Jugador` y `Enemigo`.
+- `Bomba` — temporizador y explosión.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+## Tecnologías
+Java · Swing / AWT
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Ejecutar
+```bash
+javac -d bin src/juego/*.java
+java -cp bin juego.Main
+```
